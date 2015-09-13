@@ -7,6 +7,7 @@ Freescale Kinetis Software Development Kit + Integrated Development Environment
 ARM mbed Online Development Site
 http://tinyurl.com/mpptdevelopment
 
-ARM mbed Online Development Credentials:
-username: angusranson@gmail.com
-password: notdogs8
+ARM mbed Online Development & Credentials:
+https://developer.mbed.org/compiler/#nav:/;
+username: juancortez@utexas.edu
+password: mppt2015
