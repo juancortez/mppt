@@ -1,3 +1,12 @@
 Getting Started on FRDM-K64F Board:
+http://tinyurl.com/mpptgettingstarted
 
-http://www.freescale.com/products/arm-processors/kinetis-cortex-m/k-series/k6x-ethernet-mcus/freescale-freedom-development-platform-for-kinetis-k64-k63-and-k24-mcus:FRDM-K64F?tab=In-Depth_Tab
+Development Environments:
+Freescale Kinetis Software Development Kit + Integrated Development Environment 
+(OR)
+ARM mbed Online Development Site
+http://tinyurl.com/mpptdevelopment
+
+ARM mbed Online Development Credentials:
+username: angusranson@gmail.com
+password: notdogs8
