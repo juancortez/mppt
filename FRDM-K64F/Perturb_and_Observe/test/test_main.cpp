@@ -68,6 +68,7 @@ int main ( int argc, char **argv){
 		}
 
 		float inPower = inVoltage * inCurrent; // Power = Voltage * Current
+		printf("Previous voltage is: %.6f, Previous current is: %.6f, Previous power is: %.6f \n", originalVoltage, originalCurrent, originalPower);
 		printf("Input voltage is: %.6f, Input current is: %.6f, Input power is: %.6f \n", inVoltage, inCurrent, inPower);
 
 		float deltaVoltage = inVoltage - originalVoltage; // also known as Perturbation
