@@ -18,7 +18,7 @@
  * PwmOut     |     PTD0       | Output PWM Signal to Boost Converter
  * DigitalOut |     LED1       | Heartbeat LED
  * AnalogIn   |     A0         | Voltage In
- * AnalogIn   |     A1 		   | Current In
+ * AnalogIn   |     A1         | Current In
  * PWMOut     |     PTD0       | PWM Out
  ****************************************************************************************/
 
@@ -56,13 +56,13 @@ int main(void){
 		float inVoltage = inputVoltage.read();
 		float inCurrent = inputCurrent.read();
 		float inPower = inVoltage * inCurrent; // Power = Voltage * Current
-		pc.printf("Input voltage is: %.2f, Input current is: %.2f, Input power is: %.2f", inVoltage, inCurrent, inPower);
+		pc.printf("Input voltage is: %.6f, Input current is: %.6f, Input power is: %.6f \n", inVoltage, inCurrent, inPower);
 		float deltaVoltage = inVoltage - originalVoltage; // also known as Perturbation
-		float deltaPower = currentPower - originalPower;
-		pc.printf("Delta Voltage is: %.2f, Delta Power is: %.2f," deltaVoltage, deltaPower);
+		float deltaPower = inPower - originalPower;
+		pc.printf("Delta Voltage is: %.6f, Delta Power is: %.6f \n", deltaVoltage, deltaPower);
 
 		if(deltaPower == 0){
-			break;
+			// continue code and skip everything else
 		} else if(deltaPower > 0){
 			if(deltaVoltage > 0){
 				dutyCycle += deltaVoltage; // increase PWM
