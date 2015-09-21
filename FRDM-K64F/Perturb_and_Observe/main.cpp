@@ -47,7 +47,7 @@ int main(void){
 	float dutyCycle = 0.5;
 	float originalVoltage = 3.3;
 	float originalCurrent = 0.5;
-	float originalPower = originalCurrent * originalCurrent;
+	float originalPower = originalVoltage * originalCurrent;
 	
 	while(1){
 		heartbeat = !heartbeat; // toggle heartbeat to see that the program is running
