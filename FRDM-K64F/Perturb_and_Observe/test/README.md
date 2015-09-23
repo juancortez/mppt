@@ -13,8 +13,8 @@
 	These instructions are written for Windows users.
 		Install an IDE (preferable Eclipse)
 		Create a new project, and make a new file called main.cpp
-	 	Copy and paste the code from the main.cpp file in the repository
-		Right click on the project in the Project explorer view, and create a new file called inputs.txt
+	 	Copy and paste the code from the test_main.cpp file in the repository
+		Right click on the project in the Project explorer view, and create two new files called inputs.txt 			and outputs.txt
 		Follow the instructions below, titled 'File Format for "inputs.txt"'
  
  
