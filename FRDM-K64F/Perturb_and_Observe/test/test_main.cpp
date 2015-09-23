@@ -6,11 +6,12 @@
  * Author: Juan Cortez
  * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
  * Created on: September 16, 2015 at 14:23
- * Revised on: September 21, 2015 at 14:08
+ * Revised on: September 21, 2015 at 14:11
  *
  * Purpose: The purpose of this file is to test the P&O algorithm and replicate
  * hardware inputs through the use of the terminal command line (or) the Eclipse IDE.
- * This program reads inputs from an input file called, "inputs.txt."
+ * This program reads inputs from an input file called, "inputs.txt." When finished,
+ * it outputs the readings into an output file called, "outputs.txt."
  *
  * Instructions: These instructions are written for Linux/Unix.
  *			     Installing compiler for Linux and Mac:
@@ -41,6 +42,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 /*
 * Debugging P&O Algorithm
@@ -52,13 +54,33 @@
 //TODO: Read input values from a text file with random values to disable manual entry
 int main ( int argc, char **argv){
 
-	FILE *ptr_file; // pointer to the external file
-	char fileName[11] = "inputs.txt"; // name of the file (with null termination)
+	FILE *ptr_file; // pointer to the input file
+	FILE *output_ptr_file; // pointer to the output file
+	char inputFileName[11] = "inputs.txt"; // name of input file (with null termination)
+	char outputFileName[12] = "outputs.txt"; // name of output file (with null termination)
 
-	ptr_file = fopen(fileName,"r"); //The fopen statement opens a file “output.txt” in the write (w) mode.
+	ptr_file = fopen(inputFileName,"r"); //The fopen statement opens a file “output.txt” in the write (w) mode.
+	output_ptr_file = fopen(outputFileName, "a");
+
+	/**
+	 * The following four lines are to get the current date and time in [mm] [dd] [hh:mm:ss] [yyyy] format
+	 **/
+	time_t rawtime;
+	struct tm * timeinfo;
+	time ( &rawtime );
+	timeinfo = localtime ( &rawtime );
+
 	if (!ptr_file){
-		printf("The filename %s does not exist.", fileName);
+		printf("The input filename %s does not exist.", inputFileName);
 		return 0;
+	}
+
+	if (!output_ptr_file){
+    	printf("The output filename %s does not exist.", outputFileName);
+    	return 0;
+	} else{
+		fprintf(output_ptr_file, "Duty Cycle readings taken at: %s\n", asctime (timeinfo) );
+		fprintf(output_ptr_file, "Reading \t Duty Cycle\n");
 	}
 
 	int reading = 1; // counter to keep track of readings
@@ -115,11 +137,15 @@ int main ( int argc, char **argv){
 
 		// TODO: Power Mosfet with new dutyCycle
 		printf("Duty Cycle set to: %lf\n\n", dutyCycle);
+
+		fprintf(output_ptr_file, "Reading #%d \t %lf \n", reading, dutyCycle);
+
 		printf("\t\t\t----------End of reading #%d----------\n\n", reading++);
 	}
 
-
 	fclose(ptr_file);
+	fprintf(output_ptr_file, "\n");
+	fclose(output_ptr_file);
 
 }
 
