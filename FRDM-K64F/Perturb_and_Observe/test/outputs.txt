@@ -1,0 +1,30 @@
+Duty Cycle readings taken at: Wed Sep 23 11:12:14 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.300000 
+Reading #2 	 0.500000 
+Reading #3 	 0.400000 
+Reading #4 	 2.000000 
+Reading #5 	 1.500000 
+Reading #6 	 1.300000 
+
+Duty Cycle readings taken at: Wed Sep 23 11:12:22 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.300000 
+Reading #2 	 0.500000 
+Reading #3 	 0.400000 
+Reading #4 	 2.000000 
+Reading #5 	 1.500000 
+Reading #6 	 1.300000 
+
+Duty Cycle readings taken at: Wed Sep 23 11:14:17 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.300000 
+Reading #2 	 0.500000 
+Reading #3 	 0.400000 
+Reading #4 	 2.000000 
+Reading #5 	 1.500000 
+Reading #6 	 1.300000 
+
