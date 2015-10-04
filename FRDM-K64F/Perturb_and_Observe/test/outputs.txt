@@ -28,3 +28,139 @@ Reading #4 	 2.000000
 Reading #5 	 1.500000 
 Reading #6 	 1.300000 
 
+Duty Cycle readings taken at: Sun Oct  4 14:51:28 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.300000 
+Reading #2 	 0.500000 
+Reading #3 	 0.400000 
+Reading #4 	 2.000000 
+Reading #5 	 1.500000 
+Reading #6 	 1.300000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:19:48 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.974167 
+Reading #2 	 0.967500 
+Reading #3 	 0.975833 
+Reading #4 	 0.940833 
+Reading #5 	 0.984167 
+Reading #6 	 0.984167 
+
+Duty Cycle readings taken at: Sun Oct  4 16:20:45 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 1.451667 
+Reading #4 	 0.465000 
+Reading #5 	 1.460000 
+Reading #6 	 1.460000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:21:00 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 1.451667 
+Reading #4 	 0.465000 
+Reading #5 	 1.460000 
+Reading #6 	 1.460000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:24:27 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.841667 
+Reading #4 	 0.841667 
+Reading #5 	 0.158333 
+Reading #6 	 0.875000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:26:54 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.841667 
+Reading #4 	 0.841667 
+Reading #5 	 0.158333 
+Reading #6 	 0.875000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:30:53 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.841667 
+Reading #4 	 0.841667 
+Reading #5 	 0.158333 
+Reading #6 	 0.875000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:38:35 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.491667 
+Reading #4 	 0.491667 
+Reading #5 	 0.525000 
+Reading #6 	 0.525000 
+Reading #7 	 0.525000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:40:04 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.491667 
+Reading #4 	 0.491667 
+Reading #5 	 0.525000 
+Reading #6 	 0.525000 
+Reading #7 	 0.525000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:42:33 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.491667 
+Reading #4 	 0.491667 
+Reading #5 	 0.525000 
+Reading #6 	 0.525000 
+Reading #7 	 0.525000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:42:40 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.491667 
+Reading #4 	 0.491667 
+Reading #5 	 0.525000 
+Reading #6 	 0.525000 
+Reading #7 	 0.525000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:44:56 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.508333 
+Reading #4 	 0.508333 
+Reading #5 	 0.508333 
+Reading #6 	 0.508333 
+Reading #7 	 0.575000 
+
+Duty Cycle readings taken at: Sun Oct  4 16:45:52 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.491667 
+Reading #4 	 0.491667 
+Reading #5 	 0.525000 
+Reading #6 	 0.525000 
+Reading #7 	 0.525000 
+
