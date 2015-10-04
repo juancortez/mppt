@@ -6,7 +6,7 @@
  * Author: Juan Cortez
  * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
  * Created on: September 16, 2015 at 14:23
- * Revised on: September 21, 2015 at 14:11
+ * Revised on: October 4, 2015 at 16:47
  *
  * Purpose: The purpose of this file is to test the P&O algorithm and replicate
  * hardware inputs through the use of the terminal command line (or) the Eclipse IDE.
@@ -38,6 +38,30 @@
  *							     [Input Voltage #n] [Input Current #n]
  *
  *****************************************************************************************/
+
+
+/**
+* The most widely used algorithm is the P&O algorithm. The P&O algorithm perturbs the duty cycle
+* which controls the power converter, in this way it takes steps over the p-v characteristic to 
+* find the MPPT. This perturbation causes a new operating point with a different output power. In 
+* case this output power is larger than the previous output power, this point is set as the new 
+* operating point. In case it is lower, the same power point is adjusted to a lower or higher working 
+* voltage, depending on the previous step direction. (http://bit.ly/1L73nzE)
+*
+*
+* Pulse Width (PW) is the elapsed time between the rising and falling edges of a single pulse.
+* 
+* Pulse Repetition Interval (PRI) is the time between sequential pulses.
+*
+* Pulse Repetition Frequency (PRF) is the reciprocal of PRI. The basic unit of measure for PRF
+* is hertz (Hz). 
+*
+* Duty Cycle describes the "On Time" for a pulsed signal. We can report duty cycle in units of time, 
+* but usually as a percentage. To calculate a signals' duty cycle, we need to know the signal's pulse
+* width and repetition frequency.
+* Duty Cycle = Pulse Width(sec) * Repetition Frequency (Hz) * 100
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -50,6 +74,8 @@
 * Inputs: input voltage and input current
 * Output: PWM
 */
+
+
 
 //TODO: Read input values from a text file with random values to disable manual entry
 int main ( int argc, char **argv){
@@ -90,6 +116,7 @@ int main ( int argc, char **argv){
 	// TODO: Angus spoke about a scale factor to multiple the readings by. Need to implement this.
 	// read inputVoltage and inputCurrent from textfile
 	double inVoltage, inCurrent, inPower;
+	double outVoltage = 120;
 	fgets(buf, 100, ptr_file);
 	inVoltage = atof(strtok(buf, " -\n"));
 	inCurrent = atof(strtok(NULL, " -\n"));
@@ -121,20 +148,26 @@ int main ( int argc, char **argv){
 			// continue code and skip everything else
 		} else if(deltaPower > 0){
 			if(deltaVoltage > 0){
-				dutyCycle += deltaVoltage; // increase PWM
+				inVoltage += deltaVoltage; // increase PWM
+				printf("Branch 4\n");
 			} else {
-				dutyCycle -= deltaVoltage; // decrease PWM
+				inVoltage -= deltaVoltage; // decrease PWM
+				printf("Branch 3\n");
 			}
 		} else{ // deltaPower < 0
 			if(deltaVoltage > 0){
-				dutyCycle -= deltaVoltage; // decrease PWM
+				inVoltage -= deltaVoltage; // decrease PWM
+				printf("Branch 1\n");
 			} else {
-				dutyCycle += deltaVoltage; // increase PWM
+				inVoltage += deltaVoltage; // increase PWM
+				printf("Branch 2\n");
 			}
 		}
 		originalVoltage = inVoltage; // replace old voltage with current voltage
+		originalCurrent = inCurrent;
 		originalPower = inPower; // replace old power with current power
-
+		printf("Original voltage: %lf, Original current: %lf, Original Power: %lf\n", originalVoltage, originalCurrent, originalPower);
+		dutyCycle = (outVoltage - inVoltage) / (outVoltage);
 		// TODO: Power Mosfet with new dutyCycle
 		printf("Duty Cycle set to: %lf\n\n", dutyCycle);
 
