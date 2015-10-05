@@ -75,6 +75,14 @@
 * Output: PWM
 */
 
+//Define Constants
+#define PWM_PERIOD_us        25
+#define V_IN_MULT            50.989761
+#define V_OUT_MULT           51.011235
+#define I_IN_DIV             0.09776
+#define I_OUT_DIV            0.09605
+#define HALL_IN_NO_CURRENT   2.524
+#define HALL_OUT_NO_CURRENT  2.514
 
 
 //TODO: Read input values from a text file with random values to disable manual entry
@@ -123,7 +131,7 @@ int main ( int argc, char **argv){
 	inPower = inVoltage * inCurrent; // Power = Voltage * Current
 
 	// read starting dutyCycle, originalVoltage, and originalCurrent from textfile
-	double dutyCycle, originalVoltage, originalCurrent, originalPower;
+	double dutyCycle, originalVoltage, originalCurrent, originalPower, pulseWidth;
 	fgets(buf, 100, ptr_file);
 	dutyCycle = atof(strtok(buf, " -\n"));
 	originalVoltage = atof(strtok(NULL, " -\n"));
@@ -168,8 +176,9 @@ int main ( int argc, char **argv){
 		originalPower = inPower; // replace old power with current power
 		printf("Original voltage: %lf, Original current: %lf, Original Power: %lf\n", originalVoltage, originalCurrent, originalPower);
 		dutyCycle = (outVoltage - inVoltage) / (outVoltage);
+        pulseWidth = dutyCycle * PWM_PERIOD_us; // duty cycle = pulsewidth/period -> pulsewidth = duty cycle * period
 		// TODO: Power Mosfet with new dutyCycle
-		printf("Duty Cycle set to: %lf\n\n", dutyCycle);
+		printf("Duty Cycle set to: %lf Pulse Width set to: %lf\n\n", dutyCycle, pulseWidth);
 
 		fprintf(output_ptr_file, "Reading #%d \t %lf \n", reading, dutyCycle);
 
