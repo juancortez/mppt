@@ -12,7 +12,6 @@
  * Git Repository: https://github.com/juancortez-ut/mppt
  * Dependent Libraries: https://developer.mbed.org/users/mbed_official/code/mbed/
  * FRDM-K64F Pinout: https://developer.mbed.org/media/uploads/sam_grove/xk64f_page2.jpg.pagespeed.ic.XmUo-mk4LT.webp
-
  * Signal     | FRDM-K64F Pin  | Purpose
  *
  * PwmOut     |     PTD0       | Output PWM Signal to Boost Converter
@@ -46,8 +45,15 @@
 
 #include "mbed.h"
  
- #define V_IN_MULT 50.989761
- #define V_OUT_MULT 51.011235
+//Define Constants
+#define PWM_PERIOD_us        25
+#define V_IN_MULT            50.989761
+#define V_OUT_MULT           51.011235
+#define I_IN_DIV             0.09776
+#define I_OUT_DIV            0.09605
+#define HALL_IN_NO_CURRENT   2.524
+#define HALL_OUT_NO_CURRENT  2.514
+#define AIN_MULT             3.3
 
  // Create a PwmOut connected to the specific pin
  PwmOut mypwm(PTD0);
@@ -62,16 +68,15 @@
  AnalogIn v_out(PTB11);
 
  // A serial port (UART) for communication with other serial devices
- // Serial (PinName tx, PinName rx, const char *name=NULL)
- Serial pc(USBTX, USBRX);
+ // RawSerial (PinName tx, PinName rx, const char *name=NULL)
+ RawSerial pc(USBTX, USBRX);
 
 int main(void){
 
     // \r is an escape character for the terminal emulator
     pc.printf("Program starting...\r\n");
 
-    //TODO: find the starting duty, voltage, and current ratings
-    //float dutyCycle = 0.5;
+    float pulseWidth;
     float dutyCycle;
     float originalVoltage = 60;
     float originalCurrent = 1;
@@ -80,19 +85,23 @@ int main(void){
     while(1){
         heartbeat = !heartbeat; // toggle heartbeat to see that the program is running
           
-        float inHallSensorRaw = i_hall_in.read();
-        float outHallSensorRaw = i_hall_out.read();
+        float inHallSensorRaw = i_hall_in.read() * AIN_MULT ;
+        float outHallSensorRaw = i_hall_out.read() * AIN_MULT;
+
+        pc.printf("inHallSensorRaw %.6f, outHallSensorRaw %.6f\r\n", inHallSensorRaw, outHallSensorRaw);
         
-        float outCurrent = (outHallSensorRaw - 2.514)/ 0.09605;
-        float outVoltage = v_out.read() * V_OUT_MULT; // 120V
-        float inCurrent = (inHallSensorRaw - 2.524)/ 0.09776;
-        float inVoltage = v_in.read() * V_IN_MULT;
+        float outCurrent = (outHallSensorRaw - HALL_OUT_NO_CURRENT)/ I_OUT_DIV;
+        float outVoltage = (v_out.read() * AIN_MULT) * V_OUT_MULT; // 120V
+        float inCurrent = (inHallSensorRaw - HALL_IN_NO_CURRENT)/ I_IN_DIV;
+        float inVoltage = (v_in.read() * AIN_MULT) * V_IN_MULT;
+
+        pc.printf("outVoltage %.6f, inVoltage %.6f, inCurrent %.6f, outCurrent %.6f\r\n", outVoltage, inVoltage, inCurrent, outCurrent);
         
         float inPower = inVoltage * inCurrent; // Power = Voltage * Current
-        pc.printf("Input voltage is: %.6f, Input current is: %.6f, Input power is: %.6f \n", inVoltage, inCurrent, inPower);
+        pc.printf("Input voltage is: %.6f, Input current is: %.6f, Input power is: %.6f \r\n", inVoltage, inCurrent, inPower);
         float deltaVoltage = inVoltage - originalVoltage; // also known as Perturbation
         float deltaPower = inPower - originalPower;
-        pc.printf("Delta Voltage is: %.6f, Delta Power is: %.6f \n", deltaVoltage, deltaPower);
+        pc.printf("Delta Voltage is: %.6f, Delta Power is: %.6f \r\n", deltaVoltage, deltaPower);
         
         if(deltaPower == 0){
             // continue code and skip everything else
@@ -113,20 +122,20 @@ int main(void){
         originalCurrent = inCurrent;
         originalPower = inPower; // replace old power with current power
         
+        //compute duty cyle and set pulsewidth
         dutyCycle = (outVoltage - inVoltage) / (outVoltage);
-
-        // TODO: Power Mosfet with new dutyCycle
+        pulseWidth = dutyCycle * PWM_PERIOD_us; // duty cycle = pulsewidth/period -> pulsewidth = duty cycle * period
 
         // set the PWM period, specified in micro-seconds (int), keeping the duty cycle the same
-        mypwm.period_us(25); // TODO: figure out what number to put here
+        mypwm.period_us(PWM_PERIOD_us); 
         // set the PWM pulsewidth, specified in milli-seconds (int), keeping the period the same
-        mypwm.pulsewidth_us(dutyCycle);
+        mypwm.pulsewidth_us(pulseWidth);
 
         // read(): return the current output duty-cycle setting, measured as a percentage (float)
         pc.printf("pwm set to %.2f %%\r\n", mypwm.read() * 100);
+        pc.printf("\r\n");
 
         wait(1); // set a one second delay per reading/writing
     }
 
 }
-
