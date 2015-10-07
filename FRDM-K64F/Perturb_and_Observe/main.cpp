@@ -73,7 +73,7 @@
 #define AIN_MULT             3.3
 
  // Create a PwmOut connected to the specific pin
- PwmOut mypwm(PTD0);
+ PwmOut mypwm(PTC11);
 
 // Create a DigitalOut pin for a heartbeat
  DigitalOut led1(LED1);
@@ -95,11 +95,13 @@
  Ticker timer;
 
 // Global Variables and starting Voltage and Current values
- int heartbeat = 0;
+int heartbeat = 0;
+float efficiency;
 float pulseWidth;
 float dutyCycle;
 float originalVoltage = 60;
 float originalCurrent = 1;
+float outPower;
 float originalPower = originalVoltage * originalCurrent;
 
 
@@ -107,20 +109,19 @@ float originalPower = originalVoltage * originalCurrent;
     float inHallSensorRaw = i_hall_in.read() * AIN_MULT ;
     float outHallSensorRaw = i_hall_out.read() * AIN_MULT;
 
-    pc.printf("inHallSensorRaw %.6f, outHallSensorRaw %.6f\r\n", inHallSensorRaw, outHallSensorRaw);
 
     float outCurrent = (outHallSensorRaw - HALL_OUT_NO_CURRENT)/ I_OUT_DIV;
     float outVoltage = (v_out.read() * AIN_MULT) * V_OUT_MULT; // 120V
     float inCurrent = (inHallSensorRaw - HALL_IN_NO_CURRENT)/ I_IN_DIV;
     float inVoltage = (v_in.read() * AIN_MULT) * V_IN_MULT;
 
-    pc.printf("outVoltage %.6f, inVoltage %.6f, inCurrent %.6f, outCurrent %.6f\r\n", outVoltage, inVoltage, inCurrent, outCurrent);
+    //pc.printf("outVoltage %.6f, inVoltage %.6f, inCurrent %.6f, outCurrent %.6f\r\n", outVoltage, inVoltage, inCurrent, outCurrent);
 
     float inPower = inVoltage * inCurrent; // Power = Voltage * Current
-    pc.printf("Input voltage is: %.6f, Input current is: %.6f, Input power is: %.6f \r\n", inVoltage, inCurrent, inPower);
+    pc.printf("Inputs: Voltage: %.6f, Current: %.6f, Power: %.6f \r", inVoltage, inCurrent, inPower);
     float deltaVoltage = inVoltage - originalVoltage; // also known as Perturbation
     float deltaPower = inPower - originalPower;
-    pc.printf("Delta Voltage is: %.6f, Delta Power is: %.6f \r\n", deltaVoltage, deltaPower);
+    //pc.printf("Delta Voltage is: %.6f, Delta Power is: %.6f \r\n", deltaVoltage, deltaPower);
 
     if(deltaPower == 0){
         // continue code and skip everything else
@@ -143,7 +144,16 @@ float originalPower = originalVoltage * originalCurrent;
 
     //compute duty cyle and set pulsewidth
     dutyCycle = (outVoltage - inVoltage) / (outVoltage);
+
+    pc.printf("Duty cycle to: %.2f\r", dutyCycle);
+
+    // error handling: duty cycle must NOT go above 0.8, or 80%
+    if(dutyCycle >= 0.8){
+        dutyCycle = 0.80;
+    }
+
     pulseWidth = dutyCycle * PWM_PERIOD_us; // duty cycle = pulsewidth/period -> pulsewidth = duty cycle * period
+
 
     // set the PWM period, specified in micro-seconds (int), keeping the duty cycle the same
     mypwm.period_us(PWM_PERIOD_us); 
@@ -151,13 +161,19 @@ float originalPower = originalVoltage * originalCurrent;
     mypwm.pulsewidth_us(pulseWidth);
 
     // read(): return the current output duty-cycle setting, measured as a percentage (float)
-    pc.printf("pwm set to %.2f %%\r\n", mypwm.read() * 100);
-    pc.printf("\r\n");
+    pc.printf("pwm set to %f %%\r", mypwm.read() * 100);
+
+    outPower = outVoltage * outCurrent;
+    efficiency = (outPower / inPower) * 100;
+
+    pc.printf("Outputs: Voltage: %.2f, Current: %.2f, Power: %.2f\r", outVoltage, outCurrent, outPower);
+    pc.printf("Efficiency %.2f %%\r", efficiency);
+    pc.printf("\r");
  }
 
 int main(void){
     // \r is an escape character for the terminal emulator
-    pc.printf("Program starting...\r\n");
+    pc.printf("Program starting...\r");
     timer.attach(&perturb_and_observe, 2); // interrupt every n seconds
 
     // heartbeat to make sure the program is running
