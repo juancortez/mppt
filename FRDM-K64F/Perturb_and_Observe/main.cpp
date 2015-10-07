@@ -6,19 +6,26 @@
  * Author: Juan Cortez
  * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
  * Created on: September 14, 2015 at 14:26
- * Revised on: October 4, 2015 at 16:48
+ * Revised on: October 7, 2015 at 13:05
  *
  * Microcontroller: FRDM-K64F
  * Git Repository: https://github.com/juancortez-ut/mppt
  * Dependent Libraries: https://developer.mbed.org/users/mbed_official/code/mbed/
  * FRDM-K64F Pinout: https://developer.mbed.org/media/uploads/sam_grove/xk64f_page2.jpg.pagespeed.ic.XmUo-mk4LT.webp
- * Signal     | FRDM-K64F Pin  | Purpose
  *
- * PwmOut     |     PTD0       | Output PWM Signal to Boost Converter
- * DigitalOut |     LED1       | Heartbeat LED
- * AnalogIn   |     A0         | Voltage In
- * AnalogIn   |     A1         | Current In
- * PWMOut     |     PTD0       | PWM Out
+ * Signal     | FRDM-K64F Pin       | Purpose
+ *
+ * PwmOut     |     PTD0            | Output PWM Signal to Boost Converter
+ * DigitalOut |     LED1            | Heartbeat LED
+ * AnalogIn   |     PTB2            | Hall Sensor In
+ * AnalogIn   |     PTB3            | Hall Sensor Out
+ * AnalogIn   |     PTB10           | Voltage In
+ * AnalogIn   |     PTB11           | Voltage Out
+ * RawSerial  |     USBTX, USBRX    | Serial Communication
+ * 
+ * Serial Communication on MAC
+ * $ 
+ * $ cd /dev && screen `ls | grep tty.usbmodem`
  ****************************************************************************************/
 
  /**
@@ -42,6 +49,17 @@
 * width and repetition frequency.
 * Duty 
 **/
+
+
+ // Create two AnalogIn pins
+ AnalogIn i_hall_in(PTB2);
+ AnalogIn i_hall_out(PTB3);
+ AnalogIn v_in(PTB10);
+ AnalogIn v_out(PTB11);
+
+ // A serial port (UART) for communication with other serial devices
+ // RawSerial (PinName tx, PinName rx, const char *name=NULL)
+ RawSerial pc(USBTX, USBRX);
 
 #include "mbed.h"
  
