@@ -79,6 +79,9 @@
  DigitalOut led1(LED1);
  DigitalOut led2(LED2);
 
+ // Createa  Digitain In pin for onboard switch
+ DigitalIn sw3(PTA4);
+
  // Create two AnalogIn pins
  AnalogIn i_hall_in(PTB2);
  AnalogIn i_hall_out(PTB3);
