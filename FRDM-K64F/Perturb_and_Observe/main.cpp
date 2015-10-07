@@ -24,7 +24,7 @@
  * RawSerial  |     USBTX, USBRX    | Serial Communication
  * 
  * Serial Communication on MAC
- * $ 
+ * 
  * $ cd /dev && screen `ls | grep tty.usbmodem`
  ****************************************************************************************/
 
@@ -50,16 +50,15 @@
 * Duty 
 **/
 
-
- // Create two AnalogIn pins
- AnalogIn i_hall_in(PTB2);
- AnalogIn i_hall_out(PTB3);
- AnalogIn v_in(PTB10);
- AnalogIn v_out(PTB11);
-
- // A serial port (UART) for communication with other serial devices
- // RawSerial (PinName tx, PinName rx, const char *name=NULL)
- RawSerial pc(USBTX, USBRX);
+/**
+* TODO: Write interrupt service routine.
+* 
+* Interrupt Addresses: https://developer.mbed.org/users/mbed_official/code/mbed/file/e188a91d3eaa/TARGET_K64F/MK64F12.h
+* Timer Interrupt: https://developer.mbed.org/handbook/Ticker
+* InterruptManager: https://developer.mbed.org/users/minicube/code/mbed-src-LPC1114FN28/docs/b3acfef78949/classmbed_1_1InterruptManager.html
+*  NOTE: If I use interrupt manager, import #include <InterruptManager.h>
+*
+*/
 
 #include "mbed.h"
  
@@ -153,7 +152,7 @@ int main(void){
         pc.printf("pwm set to %.2f %%\r\n", mypwm.read() * 100);
         pc.printf("\r\n");
 
-        wait(1); // set a one second delay per reading/writing
+        //wait(1); // set a one second delay per reading/writing
     }
 
 }
