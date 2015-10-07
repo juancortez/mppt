@@ -8,6 +8,6 @@ Once the code has been uploaded to the board, you can use a Terminal Emulator to
 
 Terminal Emulator Command on Mac:
 
-    $screen `ls | grep tty.usbmodem`
+    $ cd /dev && screen `ls | grep tty.usbmodem`
 
 The 'test' directory includes a test file that replicates hardware inputs.
