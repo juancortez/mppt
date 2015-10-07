@@ -6,7 +6,7 @@
  * Author: Juan Cortez
  * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
  * Created on: September 14, 2015 at 14:26
- * Revised on: October 7, 2015 at 13:05
+ * Revised on: October 7, 2015 at 16:34
  *
  * Microcontroller: FRDM-K64F
  * Git Repository: https://github.com/juancortez-ut/mppt
@@ -80,7 +80,7 @@
  DigitalOut led2(LED2);
 
  // Createa  Digitain In pin for onboard switch
- DigitalIn sw3(PTA4);
+ InterruptIn sw3(PTA4);
 
  // Create two AnalogIn pins
  AnalogIn i_hall_in(PTB2);
@@ -99,12 +99,11 @@
 
 // Global Variables and starting Voltage and Current values
 int heartbeat = 0;
-float efficiency;
+int start = 0;
 float pulseWidth;
 float dutyCycle;
 float originalVoltage = 60;
 float originalCurrent = 1;
-float outPower;
 float originalPower = originalVoltage * originalCurrent;
 
 
@@ -121,7 +120,11 @@ float originalPower = originalVoltage * originalCurrent;
     //pc.printf("outVoltage %.6f, inVoltage %.6f, inCurrent %.6f, outCurrent %.6f\r\n", outVoltage, inVoltage, inCurrent, outCurrent);
 
     float inPower = inVoltage * inCurrent; // Power = Voltage * Current
-    pc.printf("Inputs: Voltage: %.6f, Current: %.6f, Power: %.6f \r", inVoltage, inCurrent, inPower);
+    float outPower = outPower = outVoltage * outCurrent;
+
+    pc.printf("Inputs: Voltage: %.6f, Current: %.6f, Power: %.6f \r\n", inVoltage, inCurrent, inPower);
+    pc.printf("Outputs: Voltage: %.2f, Current: %.2f, Power: %.2f\r\n", outVoltage, outCurrent, outPower);
+
     float deltaVoltage = inVoltage - originalVoltage; // also known as Perturbation
     float deltaPower = inPower - originalPower;
     //pc.printf("Delta Voltage is: %.6f, Delta Power is: %.6f \r\n", deltaVoltage, deltaPower);
@@ -148,7 +151,7 @@ float originalPower = originalVoltage * originalCurrent;
     //compute duty cyle and set pulsewidth
     dutyCycle = (outVoltage - inVoltage) / (outVoltage);
 
-    pc.printf("Duty cycle to: %.2f\r", dutyCycle);
+    //pc.printf("Duty cycle to: %.2f\r\n", dutyCycle);
 
     // error handling: duty cycle must NOT go above 0.8, or 80%
     if(dutyCycle >= 0.8){
@@ -157,28 +160,35 @@ float originalPower = originalVoltage * originalCurrent;
 
     pulseWidth = dutyCycle * PWM_PERIOD_us; // duty cycle = pulsewidth/period -> pulsewidth = duty cycle * period
 
-
     // set the PWM period, specified in micro-seconds (int), keeping the duty cycle the same
     mypwm.period_us(PWM_PERIOD_us); 
     // set the PWM pulsewidth, specified in milli-seconds (int), keeping the period the same
     mypwm.pulsewidth_us(pulseWidth);
 
     // read(): return the current output duty-cycle setting, measured as a percentage (float)
-    pc.printf("pwm set to %f %%\r", mypwm.read() * 100);
+    pc.printf("PWM: %f %%\r\n", mypwm.read() * 100);
 
-    outPower = outVoltage * outCurrent;
-    efficiency = (outPower / inPower) * 100;
+    float efficiency = (outPower / inPower) * 100;
 
-    pc.printf("Outputs: Voltage: %.2f, Current: %.2f, Power: %.2f\r", outVoltage, outCurrent, outPower);
-    pc.printf("Efficiency %.2f %%\r", efficiency);
-    pc.printf("\r");
+    pc.printf("Efficiency: %.2f %%\r\n", efficiency);
+    pc.printf("\r\n");
+ }
+
+ void interruptHandler(){
+    start ^= 1;
+    if(start == 1){
+        timer.attach(&perturb_and_observe, 2); // interrupt every n seconds
+    } else{
+        timer.detach();
+    }
  }
 
 int main(void){
     // \r is an escape character for the terminal emulator
-    pc.printf("Program starting...\r");
-    timer.attach(&perturb_and_observe, 2); // interrupt every n seconds
-
+    pc.printf("Program starting...\r\n");
+    
+    // perturb and observe algorithm will begin when SW3 is pressed. If pressed again, it will stop.
+    sw3.rise(&interruptHandler);
     // heartbeat to make sure the program is running
     while(1){
         if(heartbeat == 0){
