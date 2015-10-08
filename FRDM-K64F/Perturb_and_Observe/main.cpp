@@ -6,7 +6,7 @@
  * Author: Juan Cortez
  * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
  * Created on: September 14, 2015 at 14:26
- * Revised on: October 7, 2015 at 16:34
+ * Revised on: October 8, 2015 at 09:08
  *
  * Microcontroller: FRDM-K64F
  * Git Repository: https://github.com/juancortez-ut/mppt
@@ -15,7 +15,7 @@
  *
  * Signal     | FRDM-K64F Pin       | Purpose
  *
- * PwmOut     |     PTD0            | Output PWM Signal to Boost Converter
+ * PwmOut     |     PTC11            | Output PWM Signal to Boost Converter
  * DigitalOut |     LED1            | Heartbeat LED
  * AnalogIn   |     PTB2            | Hall Sensor In
  * AnalogIn   |     PTB3            | Hall Sensor Out
@@ -50,16 +50,6 @@
 * Duty 
 **/
 
-/**
-* TODO: Write interrupt service routine.
-* 
-* Interrupt Addresses: https://developer.mbed.org/users/mbed_official/code/mbed/file/e188a91d3eaa/TARGET_K64F/MK64F12.h
-* Timer Interrupt: https://developer.mbed.org/handbook/Ticker
-* InterruptManager: https://developer.mbed.org/users/minicube/code/mbed-src-LPC1114FN28/docs/b3acfef78949/classmbed_1_1InterruptManager.html
-*  NOTE: If I use interrupt manager, import #include <InterruptManager.h>
-*
-*/
-
 #include "mbed.h"
  
 //Define Constants
@@ -79,10 +69,10 @@
  DigitalOut led1(LED1);
  DigitalOut led2(LED2);
 
- // Createa  Digitain In pin for onboard switch
+ // Create a hardware interrupt with an onboard switch
  InterruptIn sw3(PTA4);
 
- // Create two AnalogIn pins
+ // Create four AnalogIn pins
  AnalogIn i_hall_in(PTB2);
  AnalogIn i_hall_out(PTB3);
  AnalogIn v_in(PTB10);
@@ -175,7 +165,7 @@ float originalPower = originalVoltage * originalCurrent;
  }
 
  void interruptHandler(){
-    start ^= 1;
+    start ^= 1; // flip between 0 or 1
     if(start == 1){
         timer.attach(&perturb_and_observe, 2); // interrupt every n seconds
     } else{
@@ -189,6 +179,7 @@ int main(void){
     
     // perturb and observe algorithm will begin when SW3 is pressed. If pressed again, it will stop.
     sw3.rise(&interruptHandler);
+    
     // heartbeat to make sure the program is running
     while(1){
         if(heartbeat == 0){
