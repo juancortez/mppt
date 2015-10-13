@@ -164,3 +164,14 @@ Reading #5 	 0.525000
 Reading #6 	 0.525000 
 Reading #7 	 0.525000 
 
+Duty Cycle readings taken at: Mon Oct 12 20:39:58 2015
+
+Reading 	 Duty Cycle
+Reading #1 	 0.541667 
+Reading #2 	 0.491667 
+Reading #3 	 0.491667 
+Reading #4 	 0.491667 
+Reading #5 	 0.525000 
+Reading #6 	 0.525000 
+Reading #7 	 0.525000 
+

@@ -157,18 +157,14 @@ int main ( int argc, char **argv){
 		} else if(deltaPower > 0){
 			if(deltaVoltage > 0){
 				inVoltage += deltaVoltage; // increase PWM
-				printf("Branch 4\n");
 			} else {
 				inVoltage -= deltaVoltage; // decrease PWM
-				printf("Branch 3\n");
 			}
 		} else{ // deltaPower < 0
 			if(deltaVoltage > 0){
 				inVoltage -= deltaVoltage; // decrease PWM
-				printf("Branch 1\n");
 			} else {
 				inVoltage += deltaVoltage; // increase PWM
-				printf("Branch 2\n");
 			}
 		}
 		originalVoltage = inVoltage; // replace old voltage with current voltage
