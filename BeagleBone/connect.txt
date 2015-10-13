@@ -1,4 +1,0 @@
-Connecting to the BeagleBone:
-
-SSH via terminal: $ssh 192.168.7.2 -l roo
-	Password for root: [Press Enter]t
