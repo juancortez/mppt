@@ -1,0 +1,7 @@
+CMD						EXPLANATION
+====================================================================
+git pull					Gets latest code
+git status					What files have changed
+git add -A					Adds everything to Master
+git commit <file destination> -m "comment"	Commit files
+git push					Commit Everything to Master
