@@ -8,7 +8,7 @@
 * Author: Juan Cortez
 * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
 * Created on: October 20, 2015 at 16:05
-* Revised on: October 20, 2015 at 16:05
+* Revised on: October 20, 2015 at 18:01
 * 
 * Serial Communication on MAC
 * 
@@ -24,7 +24,10 @@
 SEEED_CAN can(SEEED_CAN_CS,SEEED_CAN_IRQ, SEEED_CAN_MOSI, SEEED_CAN_MISO, SEEED_CAN_CLK , 500000);
 Serial pc(USBTX, USBRX);                                  
 
+DigitalOut led1(LED1);
 DigitalOut led2(LED2);
+
+int counter = 0;
 
 int main() {
   SEEED_CANMessage msg; // create empty CAN message
@@ -39,10 +42,17 @@ int main() {
     }
     
   while(1) {
+    counter = 0;
     if(can.read(msg)) {  // if message is available, read into msg
-      printf("Message received: %d %d\r\n", msg.data[0], msg.data[1]); // display message data
+      printf("The id is: %d.\r\n", msg.id);
+      printf("The length of the message is: %d.\r\n", msg.len);
+      printf("Message received!\r\n");
+      for(counter = 0; counter < msg.len; counter++){
+        printf("msg[%d] = %c\r\n", counter, msg.data[counter]);
+      }
       led2 = !led2; // toggle receive status LED
     } 
-    wait(1);
+    led1 = !led1;
+    wait(10);
   }
 }
