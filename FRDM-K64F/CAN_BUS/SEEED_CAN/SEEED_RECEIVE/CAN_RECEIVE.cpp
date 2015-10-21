@@ -8,7 +8,7 @@
 * Author: Juan Cortez
 * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
 * Created on: October 20, 2015 at 16:05
-* Revised on: October 20, 2015 at 18:01
+* Revised on: October 21, 2015 at 12:44
 * 
 * Serial Communication on MAC
 * 
@@ -41,10 +41,9 @@ int main() {
         printf("CAN BUS Shield initialization failed...\r\n");    
     }
     
-    
     can.mask(0, 0x1FFFFFFF); // Configure Mask 0 to check all bits of a Standard CAN message Id
     can.mask(1, 0x1FFFFFFF, CANStandard); // Configure Mask 1 to check all bits of a Standard CAN message Id
-    can.filter(0, 7);  // ONLY ACCEPTS 0X09
+    can.filter(0, 7);  // ONLY ACCEPTS 0X07
     can.attach(CAN_Interrupt_Received, SEEED_CAN::AnyIrq); // when an interrupt is triggered, it will call CAN_Interrupt_Received
     
   while(1) {
@@ -53,7 +52,10 @@ int main() {
   }
 }
 
-// 
+/*
+* This function is called when the receiver receives a message from a transmitting CAN-BUS. Since the filter is set, it will
+* only accept messages with the ID as specified in the can.filter parameter. In this program, it is 7. 
+*/
 void CAN_Interrupt_Received(void){
     int counter = 0;
     if(can.read(msg)) {  // if message is available, read into msg
