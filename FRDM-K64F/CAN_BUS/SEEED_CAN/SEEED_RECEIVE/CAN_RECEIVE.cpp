@@ -31,6 +31,7 @@ DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 
 
+//TODO: which data are we going to transmit in the transmitter side?
 int main() {
     printf("SEEED_RECEIVE Program Starting...\r\n");
     
@@ -41,9 +42,12 @@ int main() {
         printf("CAN BUS Shield initialization failed...\r\n");    
     }
     
+    //TODO: figure out which unique ID we want to use on the receiving side
     can.mask(0, 0x1FFFFFFF); // Configure Mask 0 to check all bits of a Standard CAN message Id
     can.mask(1, 0x1FFFFFFF, CANStandard); // Configure Mask 1 to check all bits of a Standard CAN message Id
-    can.filter(0, 7);  // ONLY ACCEPTS 0X07
+    can.filter(0, 0x07);  // ONLY ACCEPTS 0X07
+
+    //TODO: figure out which IRQType to use. Available IRQTypes are found in seeed_can.h on line 251!
     can.attach(CAN_Interrupt_Received, SEEED_CAN::AnyIrq); // when an interrupt is triggered, it will call CAN_Interrupt_Received
     
   while(1) {
@@ -63,6 +67,7 @@ void CAN_Interrupt_Received(void){
       printf("The id is: %d.\r\n", msg.id);
       printf("The length of the message is: %d.\r\n", msg.len);
       for(counter = 0; counter < msg.len; counter++){
+        //TODO: what are we going to do with this data?
         printf("msg[%d] = %c\r\n", counter, msg.data[counter]);
       }
       led2 = !led2; // Yellow toggle receive status LED

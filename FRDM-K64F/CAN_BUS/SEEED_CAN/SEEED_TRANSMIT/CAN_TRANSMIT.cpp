@@ -34,7 +34,7 @@ DigitalOut led2(LED2);
 int id = 1;
 char can_data[MESSAGE_LENGTH] = "abcdefg"; // data being sent via CAN-BUS
 
-
+//TODO: what data are we transmitting? It must be in char[8] format.
 int main()
 {
     char *ptr = can_data; // *ptr is pointing to the beginning of the candata array
