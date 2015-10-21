@@ -21,17 +21,17 @@
 #include "mbed.h"
 #include "seeed_can.h"
 
+void CAN_Interrupt_Received(void);
+
 SEEED_CAN can(SEEED_CAN_CS,SEEED_CAN_IRQ, SEEED_CAN_MOSI, SEEED_CAN_MISO, SEEED_CAN_CLK , 500000);
+SEEED_CANMessage msg; // create empty CAN message
 Serial pc(USBTX, USBRX);                                  
 
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 
-int counter = 0;
 
 int main() {
-  SEEED_CANMessage msg; // create empty CAN message
-
     printf("SEEED_RECEIVE Program Starting...\r\n");
     
     int can_open_status = can.open(500000, SEEED_CAN::Normal);  // initialize CAN-BUS Shield
@@ -41,18 +41,28 @@ int main() {
         printf("CAN BUS Shield initialization failed...\r\n");    
     }
     
+    
+    can.mask(0, 0x1FFFFFFF); // Configure Mask 0 to check all bits of a Standard CAN message Id
+    can.mask(1, 0x1FFFFFFF, CANStandard); // Configure Mask 1 to check all bits of a Standard CAN message Id
+    can.filter(0, 7);  // ONLY ACCEPTS 0X09
+    can.attach(CAN_Interrupt_Received, SEEED_CAN::AnyIrq); // when an interrupt is triggered, it will call CAN_Interrupt_Received
+    
   while(1) {
-    counter = 0;
+    led1 = !led1; // RED heartbeat to make sure that the program is running
+    wait(1);
+  }
+}
+
+// 
+void CAN_Interrupt_Received(void){
+    int counter = 0;
     if(can.read(msg)) {  // if message is available, read into msg
+      printf("Message received!\r\n");
       printf("The id is: %d.\r\n", msg.id);
       printf("The length of the message is: %d.\r\n", msg.len);
-      printf("Message received!\r\n");
       for(counter = 0; counter < msg.len; counter++){
         printf("msg[%d] = %c\r\n", counter, msg.data[counter]);
       }
-      led2 = !led2; // toggle receive status LED
-    } 
-    led1 = !led1;
-    wait(10);
-  }
+      led2 = !led2; // Yellow toggle receive status LED
+    }    
 }
