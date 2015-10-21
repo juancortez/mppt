@@ -1,0 +1,20 @@
+CANBus ID Filtering and Masking Notes
+
+CANBUS B Frame - 4 byte header (29-bit identifier), followed by 8 data bytes
+
+The filter mask is used to determine which bits in the identifer of the
+received frame are compared with the filter
+	- If a mask is set to a zero, the corresponding ID bit will automatically be accepted, regardless of the value of the filter bit
+	- If a mask bit is set to a one, the corresponding ID bit will be compare with the value of the filter bit; if they match it is accepted otherwise the frame is rejected.
+
+EX #1) If we wish to accept only frames with ID of 0x00001567
+		- Set filter to 0x00001567
+		- Set mask to 1FFFFFFF
+
+EX #2) If we wish to accept only frames with IDs of 0x00001560 through 0x0000156F
+		- Set filter to 0x00001560
+		- Set mask to 1FFFFFF0
+
+EX #3) If we wish to accept only frames with IDs of 0x00001560 through 0x00001567
+		- Set filter to 0x00001560
+		- Set mask to 1FFFFFF8
