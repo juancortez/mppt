@@ -1,4 +1,5 @@
 CANBus ID Filtering and Masking Notes
+Tutorial found here: http://www.cse.dmu.ac.uk/~eg/tele/CanbusIDandMask.html
 
 CANBUS B Frame - 4 byte header (29-bit identifier), followed by 8 data bytes
 
