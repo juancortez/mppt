@@ -3,75 +3,137 @@
 * 
 * CAN_TRANSMIT Program - This program is loaded onto one of the FRDM boards with the CAN-BUS Shield
 * attached. This program transmits data via CAN-BUS. In order to see outputs of this program, another
-* FRDM with a CAN-BUS Shield must be connected. The results of the program running is located
-* in the SEEED_TRANSMIT.png file.
+* FRDM with a CAN-BUS Shield must be connected. 
+
+* The results of the program running is locate in the SEEED_TRANSMIT.png file.
 * 
 * Author: Juan Cortez
 * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
 * Created on: October 20, 2015 at 16:10
-* Revised on: October 20, 2015 at 18:01
+* Revised on: October 23, 2015 at 16:32
 * 
 * Serial Communication on MAC
 * 
 * $ cd /dev && screen `ls | grep tty.usbmodem`
 *
-* Example found in: // http://langster1980.blogspot.com/2014/10/mbed-can-bus-tutorial.html
 ****************************************************************************************/
 
 #include "mbed.h"
 #include "seeed_can.h"
+#include "stdlib.h"
 #define MESSAGE_LENGTH 8
 
-void printData(char*); // this functions prints the contents that are inside the array
+// prints contents that are in the 8 character array
+void printData(char*); 
 
+// converts a char variable into an 8 character array
+void convertToCharArray(char*, float);
+
+// prints out all the character elements inside an 8 character array
+void printStatus(int);
+
+// initialize CAN_BUS pin values with 500k baud rate
 SEEED_CAN can(SEEED_CAN_CS,SEEED_CAN_IRQ, SEEED_CAN_MOSI, SEEED_CAN_MISO, SEEED_CAN_CLK , 500000);
+
+// for debugging purposes
 Serial pc(USBTX, USBRX);                                  
 
+// heartbeats
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 
-//SEEED_CANMessage(int _id, const char *_data, char _len = 8, CANType _type = CANData, CANFormat _format = CANStandard)
-int id = 1;
-char can_data[MESSAGE_LENGTH] = "abcdefg"; // data being sent via CAN-BUS
-
-//TODO: what data are we transmitting? It must be in char[8] format.
 int main()
 {
-    char *ptr = can_data; // *ptr is pointing to the beginning of the candata array
-    SEEED_CANMessage canMsg(id, can_data, MESSAGE_LENGTH, CANData, CANStandard);  // initialize constructor
-    
-    printf("SEEED_TRANSMIT Program Starting...\r\n"); // initialize CAN-BUS Shield
-    
-    int can_open_status = can.open(500000, SEEED_CAN::Normal); 
-    if(can_open_status){
-        printf("CAN Bus Shield successfully initialized!\r\n");    
-    } else{
-        printf("CAN BUS Shield initialization failed...\r\n");    
-    }
+    int id = 7; // ID of the CAN_BUS Message TODO: determine which ID to send
+    char can_data[MESSAGE_LENGTH] = {}; // data being transmitted over CAN_BUS
 
-    printf("sending a message via CANbus...\r\n");
+    /* 
+    * This is all example data that I will be sending to the CAN-BUS receiver, in the following order: 
+    * outVoltage, inCurrent, inVoltage, and outCurrent
+    */
+    char *readingString[] = {
+        "OutVoltage", "InCurrent",
+        "InVoltage", "OutCurrent"
+    };
+    float dataRead[] = {
+        120.1234, 4.3234, 23.1232, 3.1232    
+    };
+    int readingNumber = 0; // counter for which data is being transmitted
     
+    printf("SEEED_TRANSMIT Program Starting...\r\n"); 
+    
+    int can_open_status = can.open(500000, SEEED_CAN::Normal); // initialize CAN-BUS Shield
+    printStatus(can_open_status); // prints status of initialization
+        
     while (1) {       
-        // send value to CAN bus and monitor return value to check if CAN
-        // message was sent successfully. If so display, increment and toggle
-        if (can.write(canMsg)) {  
-            printf("Data being transmitted is: \r\n");
-            printData(ptr);
-            ptr = can_data; // reset pointer
+        convertToCharArray(*&can_data, dataRead[readingNumber]); // convert float to an 8 char number
+        
+        // transmit 'can_data' to the receiving CAN-BUS      
+        if (can.write(SEEED_CANMessage(id, can_data, MESSAGE_LENGTH, CANData, CANStandard))) { 
+            /*
+            * CAN-BUS TRANSMIT will send reading values in this order: 
+            * "OutVoltage:", "InCurrent:", "InVoltage", "OutCurrent:"
+            */
+            printf("Data being transmitted is: %s\r\n", readingString[readingNumber]);
+            readingNumber = (readingNumber + 1) % 4; // modulus 4 since there are 4 data elements in readingString array
+            printData(*&can_data);
             led1 = !led1; // heartbeat
         }else{
             int reset_status = can.mode(SEEED_CAN::Reset); // reset canbus if there is a problem, returns 1 if successful, 0 otherwise
          }
-         canMsg.id = id++; // counter for terminal viewing purposes
+         convertToCharArray(*&can_data, dataRead[readingNumber]); // convert the next value being sent to a char array
          led2 = !led2;
-         wait(10);                                                  
+         wait(1);                                                  
     }
 }
 
+/* Prints the status of CAN_BUS initialization */
+void printStatus(int status){
+     if(status == 1){
+        printf("CAN Bus Shield successfully initialized!\r\n"); 
+        printf("Sending a message via CANbus...\r\n");   
+    } else{
+        printf("CAN BUS Shield initialization failed...\r\n");    
+    }
+}
+
+/*
+* This function converts float numbers to a char array. Limit of 7 characters.
+*
+* Inputs: char* ptr - points to the beginning of buffer[8], the char array where
+*                     we will place the result
+*         float val - the value we want converted to a char array
+*
+* Output: 3 whole number values, dot, 3 decimal points
+*
+* Expected Result: 23.2345 ---->  [0, 2, 3, ., 2, 3, 4]
+* Expected Result: 120.1234 ----> [1, 2, 0, ., 1, 2, 3]
+*/
+void convertToCharArray(char* ptr, float val){
+    memset(ptr, 0, MESSAGE_LENGTH); // empty array  
+    ptr = ptr + 7; // point the pointer to the end of the array
+    int expandedVal = val * 10000; // 23.2345 -> 232345, 120.123 -> 120123
+    int counter = 0;
+    int digit; 
+    while (expandedVal > 0) {
+        digit = expandedVal % 10;
+        *ptr = digit + '0'; // convert to a char
+        counter++; ptr--;
+        if(counter == 4){
+            *ptr = '.';
+            ptr--;
+        }
+        expandedVal /= 10;
+    }
+}
+
+/*
+* This function prints out all the character elements inside an 8 character array
+*/
 void printData(char* ptr){
     int counter = 0;
     while(counter < MESSAGE_LENGTH){
-        printf("%c ", *ptr++);
+        printf("%c", *ptr++);
         counter++;
     }
     printf("\r\n");
