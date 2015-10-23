@@ -29,7 +29,7 @@ void printData(char*);
 // converts a char variable into an 8 character array
 void convertToCharArray(char*, float);
 
-// prints out all the character elements inside an 8 character array
+// prints out the status of the CAN Bus initialization
 void printStatus(int);
 
 // initialize CAN_BUS pin values with 500k baud rate
