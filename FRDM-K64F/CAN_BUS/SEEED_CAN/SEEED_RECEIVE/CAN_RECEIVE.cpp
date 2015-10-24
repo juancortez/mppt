@@ -38,17 +38,18 @@ DigitalOut led2(LED2);
 //TODO: which data are we going to transmit in the transmitter side?
 int main() {
     printf("SEEED_RECEIVE Program Starting...\r\n");
-    
+    int filterID = 0x07;
     int can_open_status = can.open(500000, SEEED_CAN::Normal);  // initialize CAN-BUS Shield
     printStatus(can_open_status);
     
     //TODO: figure out which unique ID we want to use on the receiving side
     can.mask(0, 0x1FFFFFFF); // Configure Mask 0 to check all bits of a Standard CAN message Id
     can.mask(1, 0x1FFFFFFF, CANStandard); // Configure Mask 1 to check all bits of a Standard CAN message Id
-    can.filter(0, 0x07);  // ONLY ACCEPTS 0X07
-
+    can.filter(0, filterID);  // ONLY ACCEPTS ID listed in filterID variable
+    printf("CAN-BUS filtering messages with ID: %d\r\n", filterID);
+    
     //TODO: figure out which IRQType to use. Available IRQTypes are found in seeed_can.h on line 251!
-    can.attach(CAN_Interrupt_Received, SEEED_CAN::AnyIrq); // when an interrupt is triggered, it will call CAN_Interrupt_Received
+    can.attach(CAN_Interrupt_Received, SEEED_CAN::RxAny); // when an interrupt is triggered, it will call CAN_Interrupt_Received
     
   while(1) {
     led1 = !led1; // RED heartbeat to make sure that the program is running
@@ -59,7 +60,7 @@ int main() {
 /* Prints the status of CAN_BUS initialization */
 void printStatus(int status){
      if(status == 1){
-        printf("CAN Bus Shield successfully initialized!\r\n");  
+        printf("CAN Bus Shield successfully initialized!\r\n"); 
     } else{
         printf("CAN BUS Shield initialization failed...\r\n");    
     }
@@ -72,15 +73,15 @@ void printStatus(int status){
 void CAN_Interrupt_Received(void){
     int counter = 0;
     if(can.read(msg)) {  // if message is available, read into msg
-      printf("Message received!\r\n");
-      printf("The id is: %d.\r\n", msg.id);
-      printf("The length of the message is: %d.\r\n", msg.len);
-      printf("The message received is: \r\n");
+      printf("{ID: %d | Data: ", msg.id);
       for(counter = 0; counter < msg.len; counter++){
         //TODO: what are we going to do with this data?
         printf("%c", msg.data[counter]);
       }
-      printf("\r\n");
+      printf("}\r\n");
       led2 = !led2; // Yellow toggle receive status LED
-    }    
+    } else{
+        printf("No message data...\r\n");
+        return;
+    } 
 }
