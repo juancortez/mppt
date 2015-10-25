@@ -44,6 +44,9 @@ int main(void){
 	printData(ptr);
 	memset(&buffer[0], 0, sizeof(buffer)); // empty array
 
+	float mpptReadings[6] = {test1, test2, test3, test4, test5};
+	
+
 	return 1;
 }
 
