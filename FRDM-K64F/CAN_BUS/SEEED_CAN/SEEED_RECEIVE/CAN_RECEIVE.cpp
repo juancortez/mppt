@@ -27,6 +27,14 @@ void CAN_Interrupt_Received(void);
 // prints out the status of the CAN Bus initialization
 void printStatus(int);
 
+/*
+* This function converts an 8 char array variable into a float variable
+* and returns it.
+*
+* Expected Result: [0, 2, 3, ., 2, 3, 4] -> 23.234
+*/
+float convertToVariable(char*);
+
 SEEED_CAN can(SEEED_CAN_CS,SEEED_CAN_IRQ, SEEED_CAN_MOSI, SEEED_CAN_MISO, SEEED_CAN_CLK , 500000);
 SEEED_CANMessage msg; // create empty CAN message
 Serial pc(USBTX, USBRX);                                  
@@ -84,4 +92,27 @@ void CAN_Interrupt_Received(void){
         printf("No message data...\r\n");
         return;
     } 
+}
+
+/*
+* This function converts an 8 char array variable into a float variable
+* and returns it.
+*
+* Expected Result: [0, 2, 3, ., 2, 3, 4] -> 23.234
+*/
+float convertToVariable(char *ptr){
+  float hundreds = ((float)*ptr++ - 48) * 100;
+  hundreds = hundreds < 0 ? 0 : hundreds;
+  float tens = ((float)*ptr++ - 48) * 10;
+  tens = tens < 0 ? 0 : tens;
+  float ones = ((float)*ptr++ - 48) * 1;
+  ones = ones < 0 ? 0 : ones;
+  ptr++; // skip over decimal value
+  float tenths = ((float)*ptr++ - 48) / 10;
+  tenths = tenths < 0 ? 0 : tenths;
+  float hundredths = ((float)*ptr++ - 48) / 100;
+  hundredths = hundredths < 0 ? 0 : hundredths;
+  float thousandths = ((float)*ptr++ - 48) / 1000;
+  thousandths = thousandths < 0 ? 0 : thousandths;
+  return hundreds+tens+ones+tenths+hundredths+thousandths;
 }
