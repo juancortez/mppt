@@ -6,7 +6,7 @@
  * Author: Juan Cortez
  * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
  * Created on: September 14, 2015 at 14:26
- * Revised on: October 25, 2015 at 11:36
+ * Revised on: November 4, 2015 at 10:25
  *
  * GitHub Repository: https://github.com/juancortez-ut/mppt
  *
@@ -22,7 +22,7 @@
  *
  * Signal     | FRDM-K64F Pin       | Purpose
  *
- * PwmOut     |     PTC11           | Output PWM Signal to Boost Converter
+ * PwmOut     |     PTC3            | Output PWM Signal to Boost Converter
  * DigitalOut |     LED1            | Heartbeat LED
  * AnalogIn   |     PTB2            | Hall Sensor In
  * AnalogIn   |     PTB3            | Hall Sensor Out
@@ -88,7 +88,7 @@
 #define READING_COUNT        6
 
  // Create a PwmOut connected to the specific pin
- PwmOut mypwm(PTC11);
+ PwmOut mypwm(PTC3);
 
 // Create a DigitalOut pin for a heartbeat
  DigitalOut led1(LED1);
