@@ -6,7 +6,7 @@
  * Author: Juan Cortez
  * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
  * Created on: September 14, 2015 at 14:26
- * Revised on: November 4, 2015 at 10:25
+ * Revised on: November 8, 2015 at 18:42
  *
  * GitHub Repository: https://github.com/juancortez-ut/mppt
  *
@@ -35,12 +35,10 @@
  * 'Perturb & Observe Algorithm'. The binary of this file is located in the following directory
  * of the Github repository: '/mppt/FRDM-K64F/Perturb_and_Observe/Compiled Code'. Once the binary
  * of this program is loaded onto the board, the program will begin by initializing the
- * CAN_BUS Shield and waits for the user to press the 'SW3' button of the FRDM-K64 microcontroller.
- * When 'SW3' is pressed, the interrupt is handled and it begins the P&O algorithm. The FRDM-K64F
- * microcontroller reads in 5 different values from the Boost Converter and calculates the
+ * CAN_BUS Shield and runs the P&O algorithm in 2 second intervals.
+ * The FRDM-K64 microcontroller reads in 5 different values from the Boost Converter and calculates the
  * most optimal duty cycle. Then, the CAN_BUS Shield sends the following values to another
- * FRDM-K64F receiving CAN_BUS board: outVoltage, inCurrent, inVoltage, outCurrent, efficiency. The
- * program continues this cycle until the user presses 'SW3', which stops the P&O algorithm. All outputs
+ * FRDM-K64F receiving CAN_BUS board: outVoltage, inCurrent, inVoltage, outCurrent, efficiency. All outputs
  * are printed using the RawSerial command. To view the contents being printed, Windows users can use
  * the program 'PuTTy', and Mac users can use the built-in terminal function, 'screen.'
  *
@@ -242,23 +240,23 @@ int readingNumber = 0; // counter for which data is being transmitted
  }
 
 /* This function gets called when 'SW3' of the onboard FRDM-K64F is pressed. */
- void interruptHandler(){
-    start ^= 1; // flip between 0 or 1
-    if(start == 1){
-        timer.attach(&perturb_and_observe, 2); // interrupt every n seconds
-    } else{
-        timer.detach();
-    }
- }
+ // void interruptHandler(){
+ //    start ^= 1; // flip between 0 or 1
+ //    if(start == 1){
+ //        timer.attach(&perturb_and_observe, 2); // interrupt every n seconds
+ //    } else{
+ //        timer.detach();
+ //    }
+ // }
 
 int main(void){  
     // \r is an escape character for the terminal emulator
     pc.printf("Program starting...\r\n");
     int can_open_status = can.open(500000, SEEED_CAN::Normal); // initialize CAN-BUS Shield
     printStatus(can_open_status); // prints status of initialization
-    
+    timer.attach(&perturb_and_observe,2); // run the P&O algorithm every 2 seconds
     // perturb and observe algorithm will begin when SW3 is pressed. If pressed again, it will stop.
-    sw3.rise(&interruptHandler);
+    // sw3.rise(&interruptHandler);
     
     // heartbeat to make sure the program is running
     while(1){
