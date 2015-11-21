@@ -6,7 +6,7 @@
  * Author: Juan Cortez
  * Team: Angus Ranson, Muhammad Bukhari, Rana Madkour, Josh Frazor, Zach Pavlich
  * Created on: September 14, 2015 at 14:26
- * Revised on: November 8, 2015 at 18:42
+ * Revised on: November 16, 2015 at 15:57
  *
  * GitHub Repository: https://github.com/juancortez-ut/mppt
  *
@@ -24,10 +24,10 @@
  *
  * PwmOut     |     PTC3            | Output PWM Signal to Boost Converter
  * DigitalOut |     LED1            | Heartbeat LED
- * AnalogIn   |     PTB2            | Hall Sensor In
- * AnalogIn   |     PTB3            | Hall Sensor Out
- * AnalogIn   |     PTB10           | Voltage In
- * AnalogIn   |     PTB11           | Voltage Out
+ * AnalogIn   |     PTB3            | Hall Sensor In
+ * AnalogIn   |     PTB11           | Hall Sensor Out
+ * AnalogIn   |     PTB2            | Voltage In
+ * AnalogIn   |     PTB10           | Voltage Out
  * RawSerial  |     USBTX, USBRX    | Serial Communication
  * 
  * Program Description: This program is written for the Freescale FRDM-K64F microcontroller.
@@ -75,12 +75,12 @@
  
 //Define Constants
 #define PWM_PERIOD_us        25
-#define V_IN_MULT            50.989761
-#define V_OUT_MULT           51.011235
-#define I_IN_DIV             0.09776
-#define I_OUT_DIV            0.09605
-#define HALL_IN_NO_CURRENT   2.524
-#define HALL_OUT_NO_CURRENT  2.514
+#define V_IN_MULT            51
+#define V_OUT_MULT           50.97
+#define I_IN_DIV             0.17625899280576
+#define I_OUT_DIV            0.17785467128028
+#define HALL_IN_NO_CURRENT   2.513
+#define HALL_OUT_NO_CURRENT  2.517
 #define AIN_MULT             3.3
 #define MESSAGE_LENGTH       8
 #define READING_COUNT        6
@@ -96,10 +96,10 @@
  InterruptIn sw3(PTA4);
 
  // Create four AnalogIn pins
- AnalogIn i_hall_in(PTB2);
- AnalogIn i_hall_out(PTB3);
- AnalogIn v_in(PTB10);
- AnalogIn v_out(PTB11);
+ AnalogIn i_hall_in(PTB3);
+ AnalogIn i_hall_out(PTB11);
+ AnalogIn v_in(PTB2);
+ AnalogIn v_out(PTB10);
 
  // A serial port (UART) for communication with other serial devices
  // RawSerial (PinName tx, PinName rx, const char *name=NULL)
@@ -170,24 +170,25 @@ int readingNumber = 0; // counter for which data is being transmitted
 
     float deltaVoltage = inVoltage - originalVoltage; // also known as Perturbation
     float deltaPower = inPower - originalPower;
+    float tmpInVoltage = inVoltage;
     //pc.printf("Delta Voltage is: %.6f, Delta Power is: %.6f \r\n", deltaVoltage, deltaPower);
 
     if(deltaPower == 0){
         // continue code and skip everything else
     } else if(deltaPower > 0){
         if(deltaVoltage > 0){
-            inVoltage += deltaVoltage; // increase duty cycle
+            tmpInVoltage += deltaVoltage; // increase duty cycle
         } else {
-            inVoltage -= deltaVoltage; // decrease duty cycle
+            tmpInVoltage -= deltaVoltage; // decrease duty cycle
         }
     } else{ // deltaPower < 0
         if(deltaVoltage > 0){
-            inVoltage -= deltaVoltage; // decrease duty cycle
+            tmpInVoltage -= deltaVoltage; // decrease duty cycle
         } else {
-            inVoltage += deltaVoltage; // increase duty cycle
+            tmpInVoltage += deltaVoltage; // increase duty cycle
         }
     }
-    originalVoltage = inVoltage; // replace old voltage with current voltage
+    originalVoltage = tmpInVoltage; // replace old voltage with current voltage
     originalCurrent = inCurrent;
     originalPower = inPower; // replace old power with current power
 

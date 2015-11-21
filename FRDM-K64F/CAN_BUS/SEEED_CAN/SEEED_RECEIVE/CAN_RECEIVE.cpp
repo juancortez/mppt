@@ -21,6 +21,8 @@
 #include "mbed.h"
 #include "seeed_can.h"
 
+#define READING_COUNT        6
+
 // function that gets called on a receiving interrupt witht he specified ID
 void CAN_Interrupt_Received(void);
 
@@ -33,7 +35,7 @@ void printStatus(int);
 *
 * Expected Result: [0, 2, 3, ., 2, 3, 4] -> 23.234
 */
-float convertToVariable(char*);
+float convertToVariable(unsigned char*);
 
 SEEED_CAN can(SEEED_CAN_CS,SEEED_CAN_IRQ, SEEED_CAN_MOSI, SEEED_CAN_MISO, SEEED_CAN_CLK , 500000);
 SEEED_CANMessage msg; // create empty CAN message
@@ -41,6 +43,20 @@ Serial pc(USBTX, USBRX);
 
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
+
+// Global variables that hold MPPT readings
+float outVoltage = 0;
+float inCurrent = 0;
+float inVoltage = 0;
+float outCurrent = 0;
+float efficiency = 0;
+char *readingString[] = {
+    "OutVoltage", "InCurrent",
+    "InVoltage", "OutCurrent",
+    "Efficiency"
+};
+float mpptReadings[READING_COUNT] = {outVoltage, inCurrent, inVoltage, outCurrent, efficiency};
+int readingNumber = 0; // counter for which data is being transmitted
 
 
 //TODO: which data are we going to transmit in the transmitter side?
@@ -77,16 +93,15 @@ void printStatus(int status){
 /*
 * This function is called when the receiver receives a message from a transmitting CAN-BUS. Since the filter is set, it will
 * only accept messages with the ID as specified in the can.filter parameter. In this program, it is 7. 
+* Reads in readings in the following order:
+*   - float mpptReadings[READING_COUNT] = {outVoltage, inCurrent, inVoltage, outCurrent, efficiency};
 */
 void CAN_Interrupt_Received(void){
     int counter = 0;
     if(can.read(msg)) {  // if message is available, read into msg
-      printf("{ID: %d | Data: ", msg.id);
-      for(counter = 0; counter < msg.len; counter++){
-        //TODO: what are we going to do with this data?
-        printf("%c", msg.data[counter]);
-      }
-      printf("}\r\n");
+      mpptReadings[readingNumber] = convertToVariable(msg.data);
+      printf("%s: %.2f\r\n", readingString[readingNumber], mpptReadings[readingNumber]);
+      readingNumber = (readingNumber + 1) % 5;
       led2 = !led2; // Yellow toggle receive status LED
     } else{
         printf("No message data...\r\n");
@@ -100,7 +115,7 @@ void CAN_Interrupt_Received(void){
 *
 * Expected Result: [0, 2, 3, ., 2, 3, 4] -> 23.234
 */
-float convertToVariable(char *ptr){
+float convertToVariable(unsigned char *ptr){
   float hundreds = ((float)*ptr++ - 48) * 100;
   hundreds = hundreds < 0 ? 0 : hundreds;
   float tens = ((float)*ptr++ - 48) * 10;
